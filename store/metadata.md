@@ -21,7 +21,7 @@ same as en-US
 
 Chores is a house cleaning schedule and family chore chart that tells you only what's due today.
 
-Pick your rooms, pets, yard and car, and each one comes with its usual chores on sensible schedules: counters daily, dog walks morning and evening, bathrooms weekly, the lawn weekly, the car wash monthly, the oven every few months. First due dates are spread out, so day one feels like a normal day. Tick a chore off and it reschedules itself.
+Pick your rooms, pets, yard and car, then tick the chores you actually do from a list of the usual ones: counters daily, dog walks morning and evening, bathrooms weekly, the lawn weekly, the car wash monthly, the oven every few months. Add your own in a tap. First due dates are spread out, so day one feels like a normal day. Tick a chore off and it reschedules itself.
 
 ONLY WHAT'S DUE
 • Today shows what's due and what needs catching up, with how long it should take
@@ -31,7 +31,7 @@ ONLY WHAT'S DUE
 EVERYTHING YOU LOOK AFTER, ON ITS OWN RHYTHM
 • Starter chores for the kitchen, bathroom, bedroom, living room, laundry, kids' room, home office, garage, plants, dog, cat, yard, and car
 • Just once, daily, every few days, weekly, every two weeks, monthly, every 3 or 6 months, yearly, or any number of days
-• A freshness bar on every chore and room shows where you're needed next
+• Each area shows what's due today and what's overdue, at a glance
 
 SHARE THE CHORES FAIRLY
 • Add partners, kids, or roommates, each with their own color
@@ -65,7 +65,7 @@ Chores is an offline cleaning schedule and chore chart. No account or login. Fre
 
 ## Screenshot plan (1284x2778, iPhone 6.5")
 1. Today list with a few chores ticked: "Only what's due today"
-2. Rooms with freshness bars: "Every room on its own schedule"
+2. Areas with what's due today: "Every room on its own schedule"
 3. Chart with two or three people and points: "Share chores. Take turns."
 4. Printed chore chart PDF: "Print a chore chart for the fridge"
 5. Setup room grid: "Set up your home in one tap"

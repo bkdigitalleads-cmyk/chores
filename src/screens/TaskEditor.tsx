@@ -22,6 +22,7 @@ import {
   getRooms,
   getTask,
   getTasks,
+  insertRoom,
   insertTask,
   Member,
   prettyDate,
@@ -44,7 +45,7 @@ export interface EditorTarget {
   minutes?: number;
 }
 
-const MINUTE_OPTIONS = [2, 5, 10, 15, 30, 45, 60];
+const MINUTE_OPTIONS = [2, 5, 10, 15, 20, 30, 45, 60];
 const POINT_OPTIONS = [1, 2, 3, 5];
 
 export default function TaskEditor({ target, onClose }: { target: EditorTarget | null; onClose: () => void }) {
@@ -117,13 +118,15 @@ export default function TaskEditor({ target, onClose }: { target: EditorTarget |
       Alert.alert('Name the chore', 'For example: Wipe counters.');
       return;
     }
-    if (roomId == null) {
-      Alert.alert('Pick a room', 'Every chore lives in a room.');
+    if (roomId == null && rooms.length > 0) {
+      Alert.alert('Pick an area', 'Every chore lives in an area, like Kitchen or Dog.');
       return;
     }
     setSaving(true);
+    // First chore with no areas yet: it goes in a new "Home" area.
+    const targetRoomId = roomId ?? (await insertRoom('Home', '🏠'));
     const input = {
-      roomId,
+      roomId: targetRoomId,
       name: n,
       freqDays: freq,
       minutes,
@@ -216,7 +219,12 @@ export default function TaskEditor({ target, onClose }: { target: EditorTarget |
             </View>
           ) : null}
 
-          <Text style={[styles.label, { color: theme.textSecondary }]}>Room</Text>
+          <Text style={[styles.label, { color: theme.textSecondary }]}>Area</Text>
+          {rooms.length === 0 ? (
+            <Text style={[styles.hint, { color: theme.textFaint }]}>
+              It’ll go in a new area called Home. You can add rooms, pets, the yard or the car later.
+            </Text>
+          ) : null}
           <View style={styles.wrapRow}>
             {rooms.map((r) => (
               <Chip

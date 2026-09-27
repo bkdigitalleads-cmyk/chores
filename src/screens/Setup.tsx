@@ -1,22 +1,27 @@
 import React, { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useTheme, fonts } from '../theme';
 import { PillButton } from '../components';
 import { useApp, FREE_ROOM_LIMIT } from '../state';
 import { PRESET_ROOMS } from '../presets';
-import { seedRooms, todayIso } from '../db';
+import { todayIso } from '../db';
+import { DraftArea, createAreas, draftFromPreset, pickedCount } from '../areas';
+import ChoreChecklist from './ChoreChecklist';
 
 /**
- * First-run setup, right after the paywall: pick your rooms and get their
- * usual chores on sensible schedules. One screen, then you're in.
+ * First-run setup, right after the paywall. Step 1: pick what you look
+ * after (nothing pre-selected). Step 2: tick the chores you actually do,
+ * with the everyday ones suggested. Only ticked chores are created.
  */
 export default function Setup({ onDone }: { onDone: () => void }) {
   const theme = useTheme();
   const { isPro, showPaywall, bumpData } = useApp();
-  const common = PRESET_ROOMS.filter((r) => r.common).map((r) => r.key);
-  const [picked, setPicked] = useState<string[]>(isPro ? common : common.slice(0, FREE_ROOM_LIMIT));
+  const [picked, setPicked] = useState<string[]>([]);
+  const [step, setStep] = useState<1 | 2>(1);
+  const [drafts, setDrafts] = useState<DraftArea[]>([]);
   const [saving, setSaving] = useState(false);
+  const today = todayIso();
 
   const toggle = (key: string) => {
     Haptics.selectionAsync().catch(() => {});
@@ -31,18 +36,57 @@ export default function Setup({ onDone }: { onDone: () => void }) {
     setPicked([...picked, key]);
   };
 
-  const choreCount = PRESET_ROOMS.filter((r) => picked.includes(r.key)).reduce((s, r) => s + r.tasks.length, 0);
+  const toChores = () => {
+    // Keep ticks the person already changed if they go back and forth.
+    const next = PRESET_ROOMS.filter((r) => picked.includes(r.key)).map((r, i) => {
+      const prev = drafts.find((d) => d.key === r.key);
+      return prev ?? draftFromPreset(r, i);
+    });
+    setDrafts(next);
+    setStep(2);
+  };
 
-  const go = async () => {
+  const finish = async () => {
     setSaving(true);
     try {
-      if (picked.length) await seedRooms(picked, todayIso());
+      await createAreas(drafts, today);
       bumpData();
+      onDone();
+    } catch (e: any) {
+      Alert.alert('Couldn’t save your chores', e?.message ?? 'Please try again.');
     } finally {
       setSaving(false);
-      onDone();
     }
   };
+
+  const count = pickedCount(drafts);
+
+  if (step === 2) {
+    return (
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1, backgroundColor: theme.bg }}>
+        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+          <Pressable onPress={() => setStep(1)} hitSlop={10} style={{ alignSelf: 'flex-start' }}>
+            <Text style={[styles.back, { color: theme.accent }]}>‹ Back</Text>
+          </Pressable>
+          <Text style={[styles.title, { color: theme.text, marginTop: 14 }]}>Tick the chores you do</Text>
+          <Text style={[styles.body, { color: theme.textSecondary }]}>
+            We ticked the everyday ones. Untick anything you don’t do, tick anything you do, or add your own. First dates are spread out so day one isn’t a pile-up. You can change any of it later.
+          </Text>
+          <View style={{ marginTop: 20 }}>
+            <ChoreChecklist areas={drafts} onChange={setDrafts} today={today} />
+          </View>
+        </ScrollView>
+        <View style={[styles.footer, { borderTopColor: theme.border, backgroundColor: theme.bg }]}>
+          <PillButton
+            theme={theme}
+            label={saving ? 'Setting up…' : count > 0 ? `Add ${count} chore${count === 1 ? '' : 's'}` : 'Continue without chores'}
+            onPress={finish}
+            disabled={saving}
+          />
+        </View>
+      </KeyboardAvoidingView>
+    );
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.bg }}>
@@ -50,7 +94,7 @@ export default function Setup({ onDone }: { onDone: () => void }) {
         <Text style={styles.icon}>🏡</Text>
         <Text style={[styles.title, { color: theme.text }]}>What do you look after?</Text>
         <Text style={[styles.body, { color: theme.textSecondary }]}>
-          Rooms, pets, the yard, the car. Each one comes with its usual chores on sensible schedules, spread out so day one isn’t overwhelming. Change anything later.
+          Pick your rooms, pets, the yard or the car. Next, you’ll choose the chores for each one.
         </Text>
 
         <View style={styles.grid}>
@@ -75,17 +119,14 @@ export default function Setup({ onDone }: { onDone: () => void }) {
                 <Text style={[styles.cellName, { color: theme.text }]} numberOfLines={1}>
                   {r.name}
                 </Text>
-                <Text style={[styles.cellCount, { color: on ? theme.accent : theme.textFaint }]}>
-                  {on ? '✓ ' : ''}
-                  {r.tasks.length} chores
-                </Text>
+                {on ? <Text style={[styles.cellCheck, { color: theme.accent }]}>✓</Text> : null}
               </Pressable>
             );
           })}
         </View>
         {!isPro ? (
           <Text style={[styles.limit, { color: theme.textFaint }]}>
-            Free covers {FREE_ROOM_LIMIT} areas. Pro covers the whole house, pets, yard and car, and everyone in it.
+            Free covers {FREE_ROOM_LIMIT} areas. Pro covers the whole house, pets, yard and car.
           </Text>
         ) : null}
       </ScrollView>
@@ -93,15 +134,9 @@ export default function Setup({ onDone }: { onDone: () => void }) {
       <View style={[styles.footer, { borderTopColor: theme.border, backgroundColor: theme.bg }]}>
         <PillButton
           theme={theme}
-          label={
-            saving
-              ? 'Setting up…'
-              : picked.length
-                ? `Start with ${picked.length} area${picked.length === 1 ? '' : 's'} · ${choreCount} chores`
-                : 'Continue'
-          }
-          onPress={go}
-          disabled={saving}
+          label={picked.length ? 'Next: pick the chores' : 'Pick at least one'}
+          onPress={toChores}
+          disabled={picked.length === 0}
         />
         <Pressable onPress={onDone} hitSlop={10} style={styles.skip}>
           <Text style={[styles.skipText, { color: theme.textFaint }]}>Skip, I’ll add my own</Text>
@@ -114,6 +149,7 @@ export default function Setup({ onDone }: { onDone: () => void }) {
 const styles = StyleSheet.create({
   scroll: { padding: 24, paddingTop: 36, paddingBottom: 24 },
   icon: { fontSize: 44, marginBottom: 10 },
+  back: { fontSize: 16, fontWeight: fonts.weight.semibold },
   title: { fontSize: 28, fontWeight: fonts.weight.bold, letterSpacing: -0.5 },
   body: { fontSize: 16, lineHeight: 23, marginTop: 8 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 22 },
@@ -125,10 +161,11 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 8,
     alignItems: 'center',
+    minHeight: 96,
   },
   cellEmoji: { fontSize: 30 },
   cellName: { fontSize: 14, fontWeight: fonts.weight.semibold, marginTop: 6 },
-  cellCount: { fontSize: 11, marginTop: 2, fontWeight: fonts.weight.medium },
+  cellCheck: { fontSize: 13, marginTop: 2, fontWeight: fonts.weight.bold },
   limit: { fontSize: 12, textAlign: 'center', marginTop: 14 },
   footer: { borderTopWidth: StyleSheet.hairlineWidth, paddingHorizontal: 24, paddingTop: 12, paddingBottom: 30 },
   skip: { alignSelf: 'center', marginTop: 12, padding: 4 },

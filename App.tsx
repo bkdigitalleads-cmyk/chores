@@ -20,7 +20,7 @@ type Tab = 'today' | 'rooms' | 'chart' | 'settings';
 
 const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: 'today', label: 'Today', icon: '✅' },
-  { key: 'rooms', label: 'Rooms', icon: '🏠' },
+  { key: 'rooms', label: 'Areas', icon: '🏠' },
   { key: 'chart', label: 'Chart', icon: '📊' },
   { key: 'settings', label: 'Settings', icon: '⚙️' },
 ];
@@ -31,8 +31,10 @@ function Shell() {
   const { ready, isPro, showPaywall, paywallVisible } = useApp();
   const [tab, setTab] = useState<Tab>('today');
   const [editor, setEditor] = useState<EditorTarget | null>(null);
+  // Bumped by "Pick chores" on an empty Today tab: opens "Add an area".
+  const [addAreaSignal, setAddAreaSignal] = useState(0);
   const [onboarded, setOnboarded] = useState<boolean | null>(null);
-  // Onboarding order: paywall first, then room setup, then the attribution question.
+  // Onboarding order: paywall first, then area and chore setup, then the attribution question.
   const [paywallShown, setPaywallShown] = useState(false);
   const [setupDone, setSetupDone] = useState(false);
   const paywallOpened = useRef(false);
@@ -87,8 +89,16 @@ function Shell() {
   return (
     <View style={{ flex: 1, backgroundColor: theme.bg, paddingTop: insets.top }}>
       <View style={{ flex: 1 }}>
-        {tab === 'today' && <TodayScreen onEdit={setEditor} onGoRooms={() => setTab('rooms')} />}
-        {tab === 'rooms' && <RoomsScreen />}
+        {tab === 'today' && (
+          <TodayScreen
+            onEdit={setEditor}
+            onPickChores={() => {
+              setAddAreaSignal((n) => n + 1);
+              setTab('rooms');
+            }}
+          />
+        )}
+        {tab === 'rooms' && <RoomsScreen addSignal={addAreaSignal} onAddHandled={() => setAddAreaSignal(0)} />}
         {tab === 'chart' && <ChartScreen />}
         {tab === 'settings' && <SettingsScreen />}
       </View>

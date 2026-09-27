@@ -8,13 +8,15 @@ export interface PresetTask {
   name: string;
   freq: number;
   minutes: number;
+  /** Ticked by default in the chore picker: the everyday essentials. */
+  pick?: boolean;
 }
 
 export interface PresetRoom {
   key: string;
   name: string;
   emoji: string;
-  /** Pre-selected in first-run setup. */
+  /** One of the everyday rooms (listed first). Nothing is pre-selected. */
   common?: boolean;
   tasks: PresetTask[];
 }
@@ -26,12 +28,12 @@ export const PRESET_ROOMS: PresetRoom[] = [
     emoji: '🍳',
     common: true,
     tasks: [
-      { name: 'Wipe counters', freq: 1, minutes: 5 },
-      { name: 'Do the dishes', freq: 1, minutes: 15 },
-      { name: 'Take out the trash', freq: 3, minutes: 5 },
+      { name: 'Wipe counters', freq: 1, minutes: 5, pick: true },
+      { name: 'Do the dishes', freq: 1, minutes: 15, pick: true },
+      { name: 'Take out the trash', freq: 3, minutes: 5, pick: true },
       { name: 'Clean the stovetop', freq: 7, minutes: 10 },
       { name: 'Wipe the microwave', freq: 7, minutes: 5 },
-      { name: 'Mop the floor', freq: 7, minutes: 15 },
+      { name: 'Mop the floor', freq: 7, minutes: 15, pick: true },
       { name: 'Clear out the fridge', freq: 14, minutes: 20 },
       { name: 'Wipe cabinet fronts', freq: 30, minutes: 15 },
       { name: 'Descale the coffee maker', freq: 30, minutes: 10 },
@@ -44,10 +46,10 @@ export const PRESET_ROOMS: PresetRoom[] = [
     emoji: '🛁',
     common: true,
     tasks: [
-      { name: 'Wipe sink and mirror', freq: 3, minutes: 5 },
-      { name: 'Clean the toilet', freq: 7, minutes: 10 },
-      { name: 'Scrub shower and tub', freq: 7, minutes: 20 },
-      { name: 'Change towels', freq: 7, minutes: 5 },
+      { name: 'Wipe sink and mirror', freq: 3, minutes: 5, pick: true },
+      { name: 'Clean the toilet', freq: 7, minutes: 10, pick: true },
+      { name: 'Scrub shower and tub', freq: 7, minutes: 20, pick: true },
+      { name: 'Change towels', freq: 7, minutes: 5, pick: true },
       { name: 'Mop the floor', freq: 7, minutes: 10 },
       { name: 'Wash the bath mat', freq: 14, minutes: 5 },
       { name: 'Scrub the grout', freq: 90, minutes: 30 },
@@ -59,10 +61,10 @@ export const PRESET_ROOMS: PresetRoom[] = [
     emoji: '🛏️',
     common: true,
     tasks: [
-      { name: 'Make the bed', freq: 1, minutes: 2 },
-      { name: 'Change the sheets', freq: 7, minutes: 10 },
+      { name: 'Make the bed', freq: 1, minutes: 2, pick: true },
+      { name: 'Change the sheets', freq: 7, minutes: 10, pick: true },
       { name: 'Dust surfaces', freq: 7, minutes: 10 },
-      { name: 'Vacuum the floor', freq: 7, minutes: 10 },
+      { name: 'Vacuum the floor', freq: 7, minutes: 10, pick: true },
       { name: 'Declutter the nightstand', freq: 14, minutes: 5 },
       { name: 'Wash pillows', freq: 90, minutes: 10 },
       { name: 'Rotate the mattress', freq: 180, minutes: 10 },
@@ -74,9 +76,9 @@ export const PRESET_ROOMS: PresetRoom[] = [
     emoji: '🛋️',
     common: true,
     tasks: [
-      { name: 'Quick tidy', freq: 1, minutes: 5 },
-      { name: 'Dust surfaces', freq: 7, minutes: 10 },
-      { name: 'Vacuum the floor', freq: 7, minutes: 15 },
+      { name: 'Quick tidy', freq: 1, minutes: 5, pick: true },
+      { name: 'Dust surfaces', freq: 7, minutes: 10, pick: true },
+      { name: 'Vacuum the floor', freq: 7, minutes: 15, pick: true },
       { name: 'Wipe remotes and switches', freq: 14, minutes: 5 },
       { name: 'Vacuum the sofa', freq: 30, minutes: 15 },
       { name: 'Clean the windows', freq: 30, minutes: 20 },
@@ -88,8 +90,8 @@ export const PRESET_ROOMS: PresetRoom[] = [
     emoji: '🧺',
     common: true,
     tasks: [
-      { name: 'Wash a load', freq: 3, minutes: 10 },
-      { name: 'Fold and put away', freq: 3, minutes: 15 },
+      { name: 'Wash a load', freq: 3, minutes: 10, pick: true },
+      { name: 'Fold and put away', freq: 3, minutes: 15, pick: true },
       { name: 'Clean the lint trap', freq: 7, minutes: 2 },
       { name: 'Clean the washer', freq: 30, minutes: 15 },
     ],
@@ -99,10 +101,10 @@ export const PRESET_ROOMS: PresetRoom[] = [
     name: 'Dog',
     emoji: '🐕',
     tasks: [
-      { name: 'Morning walk', freq: 1, minutes: 20 },
-      { name: 'Evening walk', freq: 1, minutes: 20 },
-      { name: 'Feed the dog', freq: 1, minutes: 5 },
-      { name: 'Fresh water', freq: 1, minutes: 2 },
+      { name: 'Morning walk', freq: 1, minutes: 20, pick: true },
+      { name: 'Evening walk', freq: 1, minutes: 20, pick: true },
+      { name: 'Feed the dog', freq: 1, minutes: 5, pick: true },
+      { name: 'Fresh water', freq: 1, minutes: 2, pick: true },
       { name: 'Wash the bowls', freq: 3, minutes: 5 },
       { name: 'Brush the dog', freq: 7, minutes: 10 },
       { name: 'Bath time', freq: 30, minutes: 30 },
@@ -115,9 +117,9 @@ export const PRESET_ROOMS: PresetRoom[] = [
     name: 'Cat',
     emoji: '🐈',
     tasks: [
-      { name: 'Feed the cat', freq: 1, minutes: 5 },
-      { name: 'Scoop the litter', freq: 1, minutes: 5 },
-      { name: 'Fresh water', freq: 1, minutes: 2 },
+      { name: 'Feed the cat', freq: 1, minutes: 5, pick: true },
+      { name: 'Scoop the litter', freq: 1, minutes: 5, pick: true },
+      { name: 'Fresh water', freq: 1, minutes: 2, pick: true },
       { name: 'Wash the bowls', freq: 3, minutes: 5 },
       { name: 'Brush the cat', freq: 7, minutes: 5 },
       { name: 'Change all the litter', freq: 14, minutes: 15 },
@@ -128,9 +130,9 @@ export const PRESET_ROOMS: PresetRoom[] = [
     name: 'Yard',
     emoji: '🌿',
     tasks: [
-      { name: 'Water the garden', freq: 3, minutes: 15 },
-      { name: 'Take the bins to the curb', freq: 7, minutes: 5 },
-      { name: 'Mow the lawn', freq: 7, minutes: 45 },
+      { name: 'Water the garden', freq: 3, minutes: 15, pick: true },
+      { name: 'Take the bins to the curb', freq: 7, minutes: 5, pick: true },
+      { name: 'Mow the lawn', freq: 7, minutes: 45, pick: true },
       { name: 'Pull weeds', freq: 14, minutes: 20 },
       { name: 'Sweep the patio', freq: 14, minutes: 10 },
       { name: 'Rake leaves', freq: 14, minutes: 30 },
@@ -144,11 +146,11 @@ export const PRESET_ROOMS: PresetRoom[] = [
     emoji: '🚗',
     tasks: [
       { name: 'Clear out the trash', freq: 7, minutes: 5 },
-      { name: 'Wash the car', freq: 30, minutes: 30 },
+      { name: 'Wash the car', freq: 30, minutes: 30, pick: true },
       { name: 'Vacuum the interior', freq: 30, minutes: 20 },
-      { name: 'Check tire pressure', freq: 30, minutes: 10 },
+      { name: 'Check tire pressure', freq: 30, minutes: 10, pick: true },
       { name: 'Top up washer fluid', freq: 90, minutes: 5 },
-      { name: 'Oil change', freq: 182, minutes: 60 },
+      { name: 'Oil change', freq: 182, minutes: 60, pick: true },
     ],
   },
   {
@@ -156,7 +158,7 @@ export const PRESET_ROOMS: PresetRoom[] = [
     name: 'Plants',
     emoji: '🪴',
     tasks: [
-      { name: 'Water the plants', freq: 7, minutes: 10 },
+      { name: 'Water the plants', freq: 7, minutes: 10, pick: true },
       { name: 'Dust the leaves', freq: 30, minutes: 10 },
       { name: 'Feed the plants', freq: 30, minutes: 5 },
     ],
@@ -166,7 +168,7 @@ export const PRESET_ROOMS: PresetRoom[] = [
     name: 'Entryway',
     emoji: '🚪',
     tasks: [
-      { name: 'Sweep the entry', freq: 7, minutes: 5 },
+      { name: 'Sweep the entry', freq: 7, minutes: 5, pick: true },
       { name: 'Sort shoes and coats', freq: 14, minutes: 5 },
       { name: 'Wipe the front door', freq: 30, minutes: 5 },
     ],
@@ -176,8 +178,8 @@ export const PRESET_ROOMS: PresetRoom[] = [
     name: 'Kids’ room',
     emoji: '🧸',
     tasks: [
-      { name: 'Pick up toys', freq: 1, minutes: 10 },
-      { name: 'Change the sheets', freq: 7, minutes: 10 },
+      { name: 'Pick up toys', freq: 1, minutes: 10, pick: true },
+      { name: 'Change the sheets', freq: 7, minutes: 10, pick: true },
       { name: 'Sort outgrown clothes', freq: 90, minutes: 20 },
     ],
   },
@@ -186,7 +188,7 @@ export const PRESET_ROOMS: PresetRoom[] = [
     name: 'Home office',
     emoji: '💻',
     tasks: [
-      { name: 'Clear the desk', freq: 7, minutes: 5 },
+      { name: 'Clear the desk', freq: 7, minutes: 5, pick: true },
       { name: 'Empty the paper bin', freq: 7, minutes: 2 },
       { name: 'Dust electronics', freq: 14, minutes: 5 },
     ],
@@ -196,7 +198,7 @@ export const PRESET_ROOMS: PresetRoom[] = [
     name: 'Garage',
     emoji: '🧰',
     tasks: [
-      { name: 'Sweep the floor', freq: 30, minutes: 15 },
+      { name: 'Sweep the floor', freq: 30, minutes: 15, pick: true },
       { name: 'Tidy the shelves', freq: 30, minutes: 20 },
       { name: 'Declutter', freq: 90, minutes: 45 },
     ],
@@ -206,10 +208,10 @@ export const PRESET_ROOMS: PresetRoom[] = [
     name: 'Whole home',
     emoji: '🏠',
     tasks: [
-      { name: 'Take out recycling', freq: 7, minutes: 5 },
+      { name: 'Take out recycling', freq: 7, minutes: 5, pick: true },
       { name: 'Wipe light switches and handles', freq: 30, minutes: 10 },
-      { name: 'Change the HVAC filter', freq: 90, minutes: 10 },
-      { name: 'Test smoke alarms', freq: 182, minutes: 5 },
+      { name: 'Change the HVAC filter', freq: 90, minutes: 10, pick: true },
+      { name: 'Test smoke alarms', freq: 182, minutes: 5, pick: true },
     ],
   },
 ];

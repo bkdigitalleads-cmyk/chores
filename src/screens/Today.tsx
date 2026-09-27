@@ -22,10 +22,10 @@ import { EditorTarget } from './TaskEditor';
 
 export default function TodayScreen({
   onEdit,
-  onGoRooms,
+  onPickChores,
 }: {
   onEdit: (t: EditorTarget) => void;
-  onGoRooms: () => void;
+  onPickChores: () => void;
 }) {
   const theme = useTheme();
   const { dataVersion, bumpData } = useApp();
@@ -125,9 +125,12 @@ export default function TodayScreen({
           theme={theme}
           emoji="🧽"
           title="No chores yet"
-          body="Add a room and pick from its usual chores, or make your own. They’ll show up here the day they’re due."
+          body="Pick chores for your rooms, pets, yard or car from a list of the usual ones, or add one of your own. Each shows up here the day it’s due."
         >
-          <PillButton theme={theme} label="Add a room" onPress={onGoRooms} />
+          <View style={{ gap: 10, alignSelf: 'stretch', paddingHorizontal: 24 }}>
+            <PillButton theme={theme} label="Pick chores" onPress={onPickChores} />
+            <PillButton theme={theme} label="Add my own chore" kind="ghost" onPress={() => onEdit({})} />
+          </View>
         </EmptyState>
       </ScrollView>
     );

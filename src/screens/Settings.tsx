@@ -36,7 +36,7 @@ export default function SettingsScreen() {
   };
 
   const onDeleteAll = () => {
-    Alert.alert('Delete everything?', 'Every room, chore, person, and check-off is permanently erased from this device.', [
+    Alert.alert('Delete everything?', 'Every area, chore, person, and check-off is permanently erased from this device.', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Delete everything',
@@ -78,12 +78,12 @@ export default function SettingsScreen() {
 
       <SectionTitle theme={theme}>Your home</SectionTitle>
       <Card theme={theme}>
-        <Text style={[styles.label, { color: theme.textSecondary }]}>Household name (on the printed chart)</Text>
+        <Text style={[styles.label, { color: theme.textSecondary }]}>Household name (printed on the chart)</Text>
         <TextInput
           style={[styles.nameInput, { color: theme.text }]}
           value={settings.householdName}
           onChangeText={(v) => updateSettings({ householdName: v })}
-          placeholder="The Rivera House"
+          placeholder="Add your household name"
           placeholderTextColor={theme.textFaint}
         />
         <View style={[styles.row, { marginTop: 8 }]}>
@@ -99,7 +99,7 @@ export default function SettingsScreen() {
       <SectionTitle theme={theme}>Privacy & data</SectionTitle>
       <Card theme={theme}>
         <Text style={[styles.privacyNote, { color: theme.textSecondary }]}>
-          Your rooms, chores, and household stay on this iPhone. No account, no cloud, no tracking.
+          Your areas, chores, and household stay on this iPhone. No account, no cloud, no tracking.
         </Text>
       </Card>
 
