@@ -65,7 +65,7 @@ export default function SettingsScreen() {
           <Card theme={theme} style={{ ...styles.upsell, backgroundColor: theme.accentSoft }}>
             <Text style={[styles.upsellTitle, { color: theme.accent }]}>Chores Pro</Text>
             <Text style={[styles.upsellSub, { color: theme.text }]}>
-              Every room · the whole household · taking turns · printable chore chart. Starts with 3 days free.
+              Every room, pet, yard and car · the whole household · taking turns · printable chore chart. Starts with 3 days free.
             </Text>
           </Card>
         </Pressable>

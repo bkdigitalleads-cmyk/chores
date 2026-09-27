@@ -15,13 +15,17 @@ function esc(s: string): string {
 export function dueDaysInWeek(task: Pick<Task, 'nextDue' | 'freqDays'>, weekStart: string): Set<string> {
   const out = new Set<string>();
   const weekEnd = shiftDate(weekStart, 6);
-  const freq = Math.max(1, task.freqDays);
   // Anything already overdue lands on the first day of the week.
   let d = task.nextDue < weekStart ? weekStart : task.nextDue;
+  if (task.freqDays <= 0) {
+    // One-time chore: a single box on its day.
+    if (d <= weekEnd) out.add(d);
+    return out;
+  }
   let guard = 0;
   while (d <= weekEnd && guard < 14) {
     out.add(d);
-    d = shiftDate(d, freq);
+    d = shiftDate(d, task.freqDays);
     guard += 1;
   }
   return out;

@@ -31,7 +31,7 @@ import {
   todayIso,
   updateRoom,
 } from '../db';
-import { PRESET_ROOMS, PresetRoom, ROOM_EMOJIS, freqLabel, presetForRoomName } from '../presets';
+import { PRESET_ROOMS, PresetRoom, ROOM_EMOJIS, firstDueOffset, freqLabel, presetForRoomName } from '../presets';
 import { checkOff } from '../actions';
 import TaskEditor, { EditorTarget } from './TaskEditor';
 
@@ -146,7 +146,7 @@ export default function RoomsScreen() {
               <PillButton theme={theme} label="+ Add a room" kind="ghost" onPress={startAdd} />
               {!isPro ? (
                 <Text style={[styles.limit, { color: theme.textFaint }]}>
-                  Free includes {FREE_ROOM_LIMIT} rooms. Pro covers every room in the house.
+                  Free includes {FREE_ROOM_LIMIT} rooms or areas. Pro covers the whole house, pets, yard and car.
                 </Text>
               ) : null}
             </View>
@@ -385,8 +385,7 @@ function AddRoomSheet({
     if (withChores) {
       for (let i = 0; i < p.tasks.length; i++) {
         const t = p.tasks[i];
-        const span = t.freq <= 7 ? t.freq : Math.min(t.freq, 28);
-        const offset = span <= 1 ? 0 : (i * 3) % span;
+        const offset = firstDueOffset(t.freq, i, 0);
         await insertTask({
           roomId,
           name: t.name,
@@ -417,7 +416,7 @@ function AddRoomSheet({
           <Pressable onPress={onClose} hitSlop={10}>
             <Text style={[styles.headerBtn, { color: theme.textSecondary }]}>Cancel</Text>
           </Pressable>
-          <Text style={[styles.headerTitle, { color: theme.text }]}>Add a room</Text>
+          <Text style={[styles.headerTitle, { color: theme.text }]}>Add a room or area</Text>
           <View style={{ width: 50 }} />
         </View>
         <ScrollView contentContainerStyle={styles.detailScroll} keyboardShouldPersistTaps="handled">
@@ -454,7 +453,7 @@ function AddRoomSheet({
               style={[styles.renameInput, { color: theme.text, borderBottomColor: theme.border }]}
               value={custom}
               onChangeText={setCustom}
-              placeholder="Garage, Basement, Guest room…"
+              placeholder="Guest room, Pool, Chickens…"
               placeholderTextColor={theme.textFaint}
               returnKeyType="done"
               onSubmitEditing={addCustom}

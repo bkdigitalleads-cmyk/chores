@@ -129,7 +129,7 @@ export default function TaskEditor({ target, onClose }: { target: EditorTarget |
       minutes,
       points,
       memberId,
-      rotate: rotate && memberId != null && members.length > 1,
+      rotate: rotate && memberId != null && members.length > 1 && freq > 0,
       notes: notes.trim(),
       nextDue,
     };
@@ -306,7 +306,7 @@ export default function TaskEditor({ target, onClose }: { target: EditorTarget |
               ))}
             </View>
           )}
-          {members.length > 1 && memberId != null ? (
+          {members.length > 1 && memberId != null && freq > 0 ? (
             <View style={[styles.switchRow, { borderColor: theme.border, backgroundColor: theme.card }]}>
               <View style={{ flex: 1 }}>
                 <Text style={[styles.switchTitle, { color: theme.text }]}>Take turns</Text>

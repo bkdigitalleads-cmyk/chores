@@ -32,8 +32,10 @@
       "expo-sqlite"
     ],
     "extra": {
-      "revenueCatApiKeyIos": "",
-      "eas": {}
+      "revenueCatApiKeyIos": "appl_wywAazURxXUUIkeBscEhSChGlee",
+      "eas": {
+        "projectId": "15ae27f6-a3ae-4863-8813-30c691571b7a"
+      }
     },
     "owner": "bkdeveloper123"
   }

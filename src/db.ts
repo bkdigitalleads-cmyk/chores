@@ -1,5 +1,5 @@
 import * as SQLite from 'expo-sqlite';
-import { PRESET_ROOMS } from './presets';
+import { PRESET_ROOMS, firstDueOffset } from './presets';
 
 /**
  * Chores data model (distinct from every sibling app):
@@ -223,6 +223,9 @@ const TASK_SELECT = `
   FROM tasks t JOIN rooms r ON r.id = t.room_id
 `;
 
+/** next_due for a one-time chore that's been done: off every list, kept for history and undo. */
+export const DONE_FOREVER = '9999-12-31';
+
 // ---------- rooms ----------
 
 export async function getRooms(): Promise<Room[]> {
@@ -295,7 +298,10 @@ export async function deleteMember(id: number): Promise<void> {
 
 export async function getTasks(): Promise<Task[]> {
   const db = await getDb();
-  const rows = await db.getAllAsync<any>(`${TASK_SELECT} ORDER BY t.next_due, r.sort_key, t.id`);
+  const rows = await db.getAllAsync<any>(
+    `${TASK_SELECT} WHERE t.next_due < ? ORDER BY t.next_due, r.sort_key, t.id`,
+    DONE_FOREVER
+  );
   return rows.map(rowToTask);
 }
 
@@ -312,7 +318,7 @@ export async function insertTask(t: TaskInput): Promise<number> {
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     t.roomId,
     t.name.trim(),
-    Math.max(1, Math.round(t.freqDays)),
+    Math.max(0, Math.round(t.freqDays)),
     t.minutes,
     t.points,
     t.memberId,
@@ -331,7 +337,7 @@ export async function updateTask(id: number, t: TaskInput): Promise<void> {
        rotate = ?, notes = ?, next_due = ? WHERE id = ?`,
     t.roomId,
     t.name.trim(),
-    Math.max(1, Math.round(t.freqDays)),
+    Math.max(0, Math.round(t.freqDays)),
     t.minutes,
     t.points,
     t.memberId,
@@ -376,7 +382,7 @@ export async function completeTask(taskId: number, doneBy: number | null, today:
       Date.now()
     );
     let nextMember: number | null = t.member_id ?? null;
-    if (t.rotate) {
+    if (t.rotate && t.freq_days > 0) {
       const members = await db.getAllAsync<{ id: number }>('SELECT id FROM members ORDER BY sort_key, id');
       if (members.length > 1) {
         const from = t.member_id ?? credit;
@@ -387,7 +393,7 @@ export async function completeTask(taskId: number, doneBy: number | null, today:
     await db.runAsync(
       'UPDATE tasks SET last_done = ?, next_due = ?, member_id = ? WHERE id = ?',
       today,
-      shiftDate(today, Math.max(1, t.freq_days)),
+      t.freq_days > 0 ? shiftDate(today, t.freq_days) : DONE_FOREVER,
       nextMember,
       taskId
     );
@@ -493,8 +499,7 @@ export async function seedRooms(roomKeys: string[], today: string): Promise<void
       const roomId = res.lastInsertRowId;
       for (let ti = 0; ti < room.tasks.length; ti++) {
         const p = room.tasks[ti];
-        const span = p.freq <= 7 ? p.freq : Math.min(p.freq, 28);
-        const offset = span <= 1 ? 0 : (ti * 3 + ri * 2) % span;
+        const offset = firstDueOffset(p.freq, ti, ri);
         await db.runAsync(
           `INSERT INTO tasks (room_id, name, freq_days, minutes, points, member_id, rotate, notes, next_due, created_at)
            VALUES (?, ?, ?, ?, ?, NULL, 0, '', ?, ?)`,

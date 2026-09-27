@@ -48,9 +48,9 @@ export default function Setup({ onDone }: { onDone: () => void }) {
     <View style={{ flex: 1, backgroundColor: theme.bg }}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.icon}>🏡</Text>
-        <Text style={[styles.title, { color: theme.text }]}>Which rooms do you look after?</Text>
+        <Text style={[styles.title, { color: theme.text }]}>What do you look after?</Text>
         <Text style={[styles.body, { color: theme.textSecondary }]}>
-          Each room comes with its usual chores on sensible schedules, spread out so day one isn’t overwhelming. Change anything later.
+          Rooms, pets, the yard, the car. Each one comes with its usual chores on sensible schedules, spread out so day one isn’t overwhelming. Change anything later.
         </Text>
 
         <View style={styles.grid}>
@@ -85,7 +85,7 @@ export default function Setup({ onDone }: { onDone: () => void }) {
         </View>
         {!isPro ? (
           <Text style={[styles.limit, { color: theme.textFaint }]}>
-            Free covers {FREE_ROOM_LIMIT} rooms. Pro covers the whole house and everyone in it.
+            Free covers {FREE_ROOM_LIMIT} areas. Pro covers the whole house, pets, yard and car, and everyone in it.
           </Text>
         ) : null}
       </ScrollView>
@@ -97,7 +97,7 @@ export default function Setup({ onDone }: { onDone: () => void }) {
             saving
               ? 'Setting up…'
               : picked.length
-                ? `Start with ${picked.length} room${picked.length === 1 ? '' : 's'} · ${choreCount} chores`
+                ? `Start with ${picked.length} area${picked.length === 1 ? '' : 's'} · ${choreCount} chores`
                 : 'Continue'
           }
           onPress={go}

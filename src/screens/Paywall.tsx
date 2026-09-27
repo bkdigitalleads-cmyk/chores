@@ -24,7 +24,7 @@ import {
 // Copy lever 1: the word "free" sits next to a feature.
 const FEATURES: { icon: string; title: string; sub: string; free?: boolean }[] = [
   { icon: '✅', title: 'Today’s chores, done in minutes', sub: 'Only what’s due, room by room. Tick it off and it reschedules itself.', free: true },
-  { icon: '🏠', title: 'Every room in the house', sub: 'Kitchen to garage, with the usual chores already on smart schedules.' },
+  { icon: '🏠', title: 'The whole house, pets, yard and car', sub: 'Kitchen to garage, dog walks to oil changes, each with the usual chores on smart schedules.' },
   { icon: '👨‍👩‍👧', title: 'The whole household', sub: 'Assign chores, take turns automatically, and watch the points add up.' },
   { icon: '🖨️', title: 'Printable chore chart', sub: 'A weekly chart for the fridge with a box for every day a chore is due.' },
   { icon: '🔥', title: 'Streaks and history', sub: 'See who did what, every week.' },

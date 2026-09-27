@@ -21,16 +21,16 @@ same as en-US
 
 Chores is a house cleaning schedule and family chore chart that tells you only what's due today.
 
-Pick your rooms and each one comes with its usual chores on sensible schedules: counters daily, bathrooms weekly, the fridge every two weeks, the oven every few months. First due dates are spread out, so day one feels like a normal day. Tick a chore off and it reschedules itself.
+Pick your rooms, pets, yard and car, and each one comes with its usual chores on sensible schedules: counters daily, dog walks morning and evening, bathrooms weekly, the lawn weekly, the car wash monthly, the oven every few months. First due dates are spread out, so day one feels like a normal day. Tick a chore off and it reschedules itself.
 
 ONLY WHAT'S DUE
 • Today shows what's due and what needs catching up, with how long it should take
 • Coming up shows the next seven days. Did something early? Tick it there
 • Undo any check-off with one tap
 
-EVERY ROOM ON ITS OWN RHYTHM
-• Starter chores for the kitchen, bathroom, bedroom, living room, laundry, kids' room, pets, outdoor, car, and more
-• Daily, every few days, weekly, every two weeks, monthly, every 3 or 6 months, yearly, or any number of days
+EVERYTHING YOU LOOK AFTER, ON ITS OWN RHYTHM
+• Starter chores for the kitchen, bathroom, bedroom, living room, laundry, kids' room, home office, garage, plants, dog, cat, yard, and car
+• Just once, daily, every few days, weekly, every two weeks, monthly, every 3 or 6 months, yearly, or any number of days
 • A freshness bar on every chore and room shows where you're needed next
 
 SHARE THE CHORES FAIRLY
@@ -44,7 +44,7 @@ PRINTABLE CHORE CHART
 PRIVATE BY DESIGN
 • Everything stays on your iPhone. No account, no cloud, no tracking
 
-Free covers up to 3 rooms. Pro unlocks every room, your whole household, taking turns, and the printable chart. Pro is a Weekly subscription ($4.99/week after 3 days free), a Yearly subscription ($29.99/year after 7 days free), or a one-time Lifetime purchase ($59.99). Subscriptions renew automatically until cancelled in your Apple ID settings.
+Free covers up to 3 rooms or areas. Pro unlocks the whole house, pets, yard and car, your whole household, taking turns, and the printable chart. Pro is a Weekly subscription ($4.99/week after 3 days free), a Yearly subscription ($29.99/year after 7 days free), or a one-time Lifetime purchase ($59.99). Subscriptions renew automatically until cancelled in your Apple ID settings.
 
 Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 Privacy Policy: https://bkdigitalleads-cmyk.github.io/chores/privacy.html
