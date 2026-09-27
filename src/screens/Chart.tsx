@@ -23,6 +23,7 @@ import {
   insertMember,
   Member,
   prettyDate,
+  setCompletionMember,
   shiftDate,
   shortWeekday,
   startOfWeek,
@@ -66,7 +67,9 @@ export default function ChartScreen() {
   const known = new Set(members.map((m) => m.id));
   const unassignedDone = done.filter((c) => c.memberId == null || !known.has(c.memberId));
   if (members.length === 0 || unassignedDone.length > 0) {
-    rows.push({ key: 'anyone', name: members.length ? 'Anyone' : 'You', color: theme.accent, member: null });
+    // Before anyone is added it's all yours. After that, check-offs nobody
+    // claimed sit in their own row until someone is given the credit.
+    rows.push({ key: 'anyone', name: members.length ? 'Unclaimed' : 'You', color: members.length ? theme.textFaint : theme.accent, member: null });
   }
 
   const cellCount = (memberId: number | null, day: string) =>
@@ -76,6 +79,32 @@ export default function ChartScreen() {
       .filter((c) => (memberId == null ? c.memberId == null || !known.has(c.memberId) : c.memberId === memberId))
       .reduce((s, c) => s + c.points, 0);
   const leaderPoints = Math.max(0, ...rows.map((r) => pointsFor(r.member?.id ?? null)));
+
+  const claim = (c: Completion) => {
+    if (members.length === 0) return;
+    const current = members.find((m) => m.id === c.memberId);
+    Alert.alert('Who did it?', c.taskName, [
+      ...members.map((m) => ({
+        text: m.id === current?.id ? `${m.name} ✓` : m.name,
+        onPress: async () => {
+          await setCompletionMember(c.id, m.id);
+          bumpData();
+        },
+      })),
+      ...(current
+        ? [
+            {
+              text: 'Nobody in particular',
+              onPress: async () => {
+                await setCompletionMember(c.id, null);
+                bumpData();
+              },
+            },
+          ]
+        : []),
+      { text: 'Cancel', style: 'cancel' as const },
+    ]);
+  };
 
   const onAddPerson = () => {
     if (!isPro) {
@@ -180,7 +209,7 @@ export default function ChartScreen() {
           {rows.map((r) => (
             <View key={r.key} style={[styles.gridRow, { borderTopColor: theme.border, borderTopWidth: StyleSheet.hairlineWidth }]}>
               <View style={[styles.nameCol, { flexDirection: 'row', alignItems: 'center', gap: 6 }]}>
-                <MemberDot name={r.name} color={r.color} size={20} />
+                <MemberDot name={r.member || members.length === 0 ? r.name : '?'} color={r.color} size={20} />
                 <Text style={[styles.gridName, { color: theme.text }]} numberOfLines={1}>
                   {r.name}
                 </Text>
@@ -205,6 +234,11 @@ export default function ChartScreen() {
             </View>
           ))}
         </Card>
+        {members.length > 0 && unassignedDone.length > 0 ? (
+          <Text style={[styles.claimHint, { color: theme.textFaint }]}>
+            Unclaimed means nobody was picked when it was ticked off. Tap a chore below to give someone the points.
+          </Text>
+        ) : null}
 
         {done.length > 0 ? (
           <>
@@ -216,16 +250,21 @@ export default function ChartScreen() {
                 .map((c) => {
                   const m = members.find((x) => x.id === c.memberId);
                   return (
-                    <View key={c.id} style={[styles.logRow, { borderBottomColor: theme.border }]}>
+                    <Pressable
+                      key={c.id}
+                      onPress={() => claim(c)}
+                      disabled={members.length === 0}
+                      style={({ pressed }) => [styles.logRow, { borderBottomColor: theme.border, opacity: pressed ? 0.6 : 1 }]}
+                    >
                       <Text style={styles.logEmoji}>{c.roomEmoji}</Text>
                       <Text style={[styles.logName, { color: theme.text }]} numberOfLines={1}>
                         {c.taskName}
                       </Text>
                       <Text style={[styles.logMeta, { color: theme.textFaint }]}>
-                        {m ? `${m.name} · ` : ''}
+                        {m ? `${m.name} · ` : members.length ? 'Unclaimed · ' : ''}
                         {shortWeekday(c.date)}
                       </Text>
-                    </View>
+                    </Pressable>
                   );
                 })}
             </Card>
@@ -297,7 +336,7 @@ function MemberSheet({
 
   const remove = () => {
     if (!target || target === 'new') return;
-    Alert.alert(`Remove ${target.name}?`, 'Their chores become “Anyone” chores. Past check-offs stay in the history.', [
+    Alert.alert(`Remove ${target.name}?`, 'Their chores become “Anyone” chores. Their past check-offs stay in the history as unclaimed.', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Remove',
@@ -395,6 +434,7 @@ const styles = StyleSheet.create({
   logEmoji: { fontSize: 18 },
   logName: { flex: 1, fontSize: 15 },
   logMeta: { fontSize: 12 },
+  claimHint: { fontSize: 12, lineHeight: 17, textAlign: 'center', marginTop: 8, paddingHorizontal: 8 },
   emptyWeek: { textAlign: 'center', marginTop: 18, fontSize: 14 },
   printHint: { fontSize: 12, textAlign: 'center', marginTop: 8, lineHeight: 17 },
   header: {

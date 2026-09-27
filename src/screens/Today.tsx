@@ -237,23 +237,18 @@ export default function TodayScreen({
 
         {upcomingAll.length > 0 ? (
           <>
-            <SectionTitle
-              theme={theme}
-              right={
-                upcomingAll.length > 6 ? (
-                  <Pressable onPress={() => setShowAllUpcoming((v) => !v)} hitSlop={8}>
-                    <Text style={[styles.more, { color: theme.accent }]}>
-                      {showAllUpcoming ? 'Show less' : `Show all ${upcomingAll.length}`}
-                    </Text>
-                  </Pressable>
-                ) : undefined
-              }
-            >
-              Coming up
-            </SectionTitle>
+            <SectionTitle theme={theme}>Coming up</SectionTitle>
             <Card theme={theme} style={styles.listCard}>
               {upcoming.map((t) => row(t, false))}
             </Card>
+            {upcomingAll.length > 6 ? (
+              // Centered under the list so the + button never covers it.
+              <Pressable onPress={() => setShowAllUpcoming((v) => !v)} hitSlop={8} style={styles.moreBtn}>
+                <Text style={[styles.more, { color: theme.accent }]}>
+                  {showAllUpcoming ? 'Show less' : `Show all ${upcomingAll.length} coming up`}
+                </Text>
+              </Pressable>
+            ) : null}
             <Text style={[styles.footnote, { color: theme.textFaint }]}>
               Done something early? Tick it here and it moves to its next date.
             </Text>
@@ -294,7 +289,8 @@ const styles = StyleSheet.create({
   doneTitle: { textDecorationLine: 'line-through' },
   rowMeta: { fontSize: 13, marginTop: 2 },
   due: { fontSize: 12, fontWeight: fonts.weight.semibold },
-  more: { fontSize: 13, fontWeight: fonts.weight.semibold },
+  more: { fontSize: 14, fontWeight: fonts.weight.semibold },
+  moreBtn: { alignSelf: 'center', marginTop: 12, paddingVertical: 4, paddingHorizontal: 10 },
   footnote: { fontSize: 12, textAlign: 'center', marginTop: 10 },
   fab: {
     position: 'absolute',

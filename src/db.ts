@@ -426,6 +426,12 @@ export async function undoCompletion(taskId: number, today: string): Promise<boo
 
 // ---------- completions ----------
 
+/** Change who gets the credit for a check-off (null = nobody in particular). */
+export async function setCompletionMember(id: number, memberId: number | null): Promise<void> {
+  const db = await getDb();
+  await db.runAsync('UPDATE completions SET member_id = ? WHERE id = ?', memberId, id);
+}
+
 export async function getCompletionsBetween(start: string, end: string): Promise<Completion[]> {
   const db = await getDb();
   const rows = await db.getAllAsync<any>(

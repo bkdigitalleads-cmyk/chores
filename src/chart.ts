@@ -1,6 +1,6 @@
 /**
  * Printable weekly chore chart, generated on-device with expo-print.
- * One section per person (plus "Anyone" for shared chores): each chore on a
+ * One section per person (plus "Anyone can do these" for shared chores): each chore on a
  * row with a box on every day it's due that week. Made for the fridge door.
  */
 import * as Print from 'expo-print';
@@ -75,13 +75,13 @@ export function buildChartHtml(
     sections.push(section(m.name, m.color, inWeek.filter((t) => t.memberId === m.id), days, weekStart));
   }
   const shared = inWeek.filter((t) => t.memberId == null || !members.some((m) => m.id === t.memberId));
-  sections.push(section(members.length ? 'Anyone' : householdName || 'Our home', '#2E7D5B', shared, days, weekStart));
+  sections.push(section(members.length ? 'Anyone can do these' : householdName || 'Our home', '#2E7D5B', shared, days, weekStart));
 
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8" />
 <style>
   @page { size: letter portrait; margin: 30px; }
-  body { font-family: -apple-system, Helvetica, Arial, sans-serif; color: #16231b; margin: 0; }
+  body { font-family: -apple-system, Helvetica, Arial, sans-serif; color: #16231b; margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   h1 { font-size: 24px; margin: 0; letter-spacing: -0.3px; }
   .sub { color: #4b5d52; font-size: 12px; margin: 2px 0 14px; }
   .sec { page-break-inside: avoid; margin-bottom: 18px; border: 1.5px solid #d7e2d9; border-radius: 12px; padding: 10px 12px; }
@@ -92,14 +92,14 @@ export function buildChartHtml(
   th.n { text-align: left; }
   td { border-bottom: 1px solid #e3ebe5; padding: 6px 4px; font-size: 12px; vertical-align: middle; }
   td.n { width: 44%; }
-  .room { font-size: 10px; color: #8a998f; margin-top: 1px; }
+  .room { font-size: 10px; color: #5f6f65; margin-top: 1px; }
   th.d, td.c { width: 6.5%; text-align: center; }
   th.p, td.p { width: 6%; text-align: center; color: #4b5d52; }
   .box { display: inline-block; width: 16px; height: 16px; border: 1.8px solid #16231b; border-radius: 4px; }
   .dot { color: #c9d4cc; font-size: 14px; }
   .total { font-size: 11px; color: #4b5d52; margin-top: 8px; text-align: right; }
   .line { display: inline-block; width: 60px; border-bottom: 1px solid #16231b; }
-  .footer { margin-top: 10px; color: #8a998f; font-size: 9px; text-align: center; }
+  .footer { margin-top: 10px; color: #5f6f65; font-size: 9px; text-align: center; }
 </style></head>
 <body>
   <h1>${esc(householdName || 'Our')} Chore Chart</h1>

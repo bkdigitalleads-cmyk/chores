@@ -5,7 +5,8 @@ import { maybeRequestReview } from './reviews';
 
 /**
  * Mark a chore done. If it's nobody's in particular and more than one person
- * shares the house, ask who did it so the chart and points stay fair.
+ * shares the house, ask who did it so the chart and points stay fair. With
+ * just one person in the household, they get the credit.
  */
 export function checkOff(task: Task, members: Member[], onDone: () => void): void {
   const today = todayIso();
@@ -27,5 +28,5 @@ export function checkOff(task: Task, members: Member[], onDone: () => void): voi
     ]);
     return;
   }
-  finish(null);
+  finish(task.memberId == null && members.length === 1 ? members[0].id : null);
 }
