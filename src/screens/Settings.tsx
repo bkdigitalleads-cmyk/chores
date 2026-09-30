@@ -13,7 +13,7 @@ const SUPPORT_URL = 'https://bkdigitalleads-cmyk.github.io/chores/support.html';
 
 export default function SettingsScreen() {
   const theme = useTheme();
-  const { settings, updateSettings, isPro, setIsPro, showPaywall, bumpData } = useApp();
+  const { settings, updateSettings, isPro, setIsPro, showPaywall, bumpData, promoGrant } = useApp();
   const [busy, setBusy] = useState(false);
 
   const onRestore = async () => {
@@ -72,7 +72,11 @@ export default function SettingsScreen() {
       ) : (
         <Card theme={theme} style={{ ...styles.upsell, backgroundColor: theme.accentSoft }}>
           <Text style={[styles.upsellTitle, { color: theme.accent }]}>Chores Pro is on</Text>
-          <Text style={[styles.upsellSub, { color: theme.text }]}>Thanks for supporting a small, independent app.</Text>
+          <Text style={[styles.upsellSub, { color: theme.text }]}>
+            {promoGrant
+              ? `${promoGrant.label} offer. Unlocked on this iPhone for good.`
+              : 'Thanks for supporting a small, independent app.'}
+          </Text>
         </Card>
       )}
 

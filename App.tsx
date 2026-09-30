@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme, fonts } from './src/theme';
-import { AppProvider, useApp } from './src/state';
+import { AppProvider, ONBOARDED_KEY, useApp } from './src/state';
 import TodayScreen from './src/screens/Today';
 import RoomsScreen from './src/screens/Rooms';
 import ChartScreen from './src/screens/Chart';
@@ -13,8 +13,6 @@ import TaskEditor, { EditorTarget } from './src/screens/TaskEditor';
 import PaywallModal from './src/screens/Paywall';
 import Setup from './src/screens/Setup';
 import Onboarding from './src/screens/Onboarding';
-
-const ONBOARDED_KEY = 'chores.onboarded.v1';
 
 type Tab = 'today' | 'rooms' | 'chart' | 'settings';
 
@@ -28,7 +26,7 @@ const TABS: { key: Tab; label: string; icon: string }[] = [
 function Shell() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const { ready, isPro, showPaywall, paywallVisible } = useApp();
+  const { ready, isPro, showPaywall, paywallVisible, promoGrant, promoJustGranted, clearPromoJustGranted } = useApp();
   const [tab, setTab] = useState<Tab>('today');
   const [editor, setEditor] = useState<EditorTarget | null>(null);
   // Bumped by "Pick chores" on an empty Today tab: opens "Add an area".
@@ -60,6 +58,16 @@ function Shell() {
   useEffect(() => {
     if (paywallOpened.current && !paywallVisible) setPaywallShown(true);
   }, [paywallVisible]);
+
+  // A launch offer just unlocked Pro: say so once.
+  useEffect(() => {
+    if (!promoJustGranted || !promoGrant) return;
+    clearPromoJustGranted();
+    Alert.alert(
+      `${promoGrant.label}: Chores Pro is free`,
+      'Every room, the whole household, taking turns and the printable chart are unlocked on this iPhone, and they stay unlocked.'
+    );
+  }, [promoJustGranted, promoGrant, clearPromoJustGranted]);
 
   const finishOnboarding = () => {
     setOnboarded(true);

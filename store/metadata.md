@@ -55,6 +55,14 @@ Only what's due today, room by room. Share chores with your household, take turn
 ## What's New (1.0)
 First release.
 
+## What's New (1.0.1)
+Small fixes and support for launch offers.
+
+## Launch offers (1.0.1+)
+The app reads `promo.json` from the Chores site on launch. Put a window in it and Pro unlocks (for good, on that iPhone) for anyone who opens the app inside the window:
+`{"proFree": {"start": "2026-10-09T04:00:00Z", "end": "2026-10-11T04:00:00Z", "label": "Launch week"}}`
+`{}` means no offer. Editing promo.json alone does not trigger an EAS build. First launch waits up to 3 s for the file so the onboarding paywall is skipped; later launches check in the background and show a one-time note.
+
 ## Pricing (RevenueCat: entitlement `pro`, offering `default`) - same structure as Attendance Tracker, needs Brian's OK
 - `chores_pro_weekly` - auto-renewing, **$4.99/week**, 3 days free - $rc_weekly (primary)
 - `chores_pro_yearly` - auto-renewing, **$29.99/year**, 7 days free - $rc_annual
