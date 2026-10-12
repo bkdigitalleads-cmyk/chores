@@ -15,7 +15,7 @@ export function checkOff(task: Task, members: Member[], onDone: () => void): voi
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     onDone();
     try {
-      if ((await countCompletions()) >= 3) maybeRequestReview();
+      if ((await countCompletions()) >= 1) maybeRequestReview();
     } catch {
       // never let the review prompt affect the app
     }

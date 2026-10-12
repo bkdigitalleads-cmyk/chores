@@ -5,8 +5,9 @@ const ASKED_KEY = 'chores.reviewAsked.v1';
 
 /**
  * Ask for an App Store rating exactly once, at a moment of value: after the
- * third chore is checked off, or after the first printed chore chart.
- * Never solicited anywhere else.
+ * first chore is checked off, or after the first printed chore chart.
+ * Never solicited anywhere else. (Was the third check-off until 1.0.2: most
+ * launch-offer installs never got that far, so they were never asked.)
  */
 export async function maybeRequestReview(): Promise<void> {
   try {
