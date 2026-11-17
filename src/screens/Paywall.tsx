@@ -10,11 +10,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import Purchases, {
-  INTRO_ELIGIBILITY_STATUS,
-  PurchasesOffering,
-  PurchasesPackage,
-} from 'react-native-purchases';
+import { PurchasesOffering, PurchasesPackage } from 'react-native-purchases';
 import { useTheme, fonts } from '../theme';
 import { PillButton } from '../components';
 import { useApp } from '../state';
@@ -24,6 +20,7 @@ import {
   restorePurchases,
   isBillingAvailable,
 } from '../purchases';
+import { leadPackage, trialEligibility, trialLabel } from '../paywallPlans';
 
 // Copy lever 1: the word "free" sits next to a feature.
 const FEATURES: { icon: string; title: string; sub: string; free?: boolean }[] = [
@@ -34,14 +31,6 @@ const FEATURES: { icon: string; title: string; sub: string; free?: boolean }[] =
 ];
 
 const TERMS_URL = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
-
-function trialLabel(pkg: PurchasesPackage | undefined): string | null {
-  const intro = pkg?.product.introPrice;
-  if (!intro || intro.price !== 0) return null;
-  const n = intro.periodNumberOfUnits;
-  const unit = intro.periodUnit.toLowerCase();
-  return `${n} ${unit}${n === 1 ? '' : 's'} free`;
-}
 
 function perUnit(pkg: PurchasesPackage | undefined, unit: 'week' | 'year'): string {
   return pkg ? `${pkg.product.priceString}/${unit}` : '';
@@ -64,29 +53,12 @@ export default function PaywallModal({ privacyUrl }: { privacyUrl: string }) {
     (async () => {
       const off = await getOffering();
       // Trial wording only for products this Apple ID can still get a trial on.
-      // Read-only StoreKit lookup; anything but ELIGIBLE (or an error) means no trial wording.
-      const eligible: Record<string, boolean> = {};
-      const ids = (off?.availablePackages ?? [])
-        .filter((p) => p.product.introPrice?.price === 0)
-        .map((p) => p.product.identifier);
-      if (ids.length > 0 && isBillingAvailable()) {
-        try {
-          const res = await Purchases.checkTrialOrIntroductoryPriceEligibility(ids);
-          for (const id of ids)
-            eligible[id] = res[id]?.status === INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE;
-        } catch {
-          // Leave everything ineligible: never promise a trial we are not sure of.
-        }
-      }
-      setTrialEligible(eligible);
+      setTrialEligible(await trialEligibility(off));
       setOffering(off);
       // Yearly is the primary plan (Nov 2026: weekly trials were not converting; same change as Attend 1.0.6).
       // No annual package in the offering: Weekly leads as before.
       // During a launch offer the Lifetime price is set to 0 in App Store Connect; then it leads.
-      const freeLifetime = off?.lifetime && off.lifetime.product.price === 0 ? off.lifetime : null;
-      const primary =
-        freeLifetime ?? off?.annual ?? off?.weekly ?? off?.lifetime ?? off?.availablePackages?.[0] ?? null;
-      setSelected(primary);
+      setSelected(leadPackage(off));
       setLoading(false);
     })();
   }, [paywallVisible]);

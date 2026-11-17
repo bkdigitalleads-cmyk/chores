@@ -1,11 +1,12 @@
 import Constants from 'expo-constants';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Linking, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { useTheme, fonts } from '../theme';
 import { Card, SectionTitle } from '../components';
 import { useApp } from '../state';
 import { deleteAllData } from '../db';
-import { restorePurchases, isBillingAvailable } from '../purchases';
+import { restorePurchases, isBillingAvailable, getOffering } from '../purchases';
+import { leadPackage, trialEligibility, trialLabel } from '../paywallPlans';
 
 const TERMS_URL = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
 export const PRIVACY_URL = 'https://bkdigitalleads-cmyk.github.io/chores/privacy.html';
@@ -15,6 +16,23 @@ export default function SettingsScreen() {
   const theme = useTheme();
   const { settings, updateSettings, isPro, setIsPro, showPaywall, bumpData, promoGrant } = useApp();
   const [busy, setBusy] = useState(false);
+  // Trial of the plan the paywall leads with, only if this Apple ID can still get it.
+  const [leadTrial, setLeadTrial] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isPro) return;
+    let alive = true;
+    (async () => {
+      const off = await getOffering();
+      const lead = leadPackage(off);
+      const trial = trialLabel(lead ?? undefined);
+      const eligible = trial && lead ? (await trialEligibility(off))[lead.product.identifier] : false;
+      if (alive) setLeadTrial(eligible ? trial : null);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [isPro]);
 
   const onRestore = async () => {
     if (!isBillingAvailable()) {
@@ -65,7 +83,7 @@ export default function SettingsScreen() {
           <Card theme={theme} style={{ ...styles.upsell, backgroundColor: theme.accentSoft }}>
             <Text style={[styles.upsellTitle, { color: theme.accent }]}>Chores Pro</Text>
             <Text style={[styles.upsellSub, { color: theme.text }]}>
-              Every room, pet, yard and car · the whole household · taking turns · printable chore chart. Starts with 3 days free.
+              Every room, pet, yard and car · the whole household · taking turns · printable chore chart. {leadTrial ? `Starts with ${leadTrial}.` : 'See plans.'}
             </Text>
           </Card>
         </Pressable>
