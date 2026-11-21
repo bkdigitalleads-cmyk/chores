@@ -122,7 +122,7 @@ export default function ChartScreen() {
     setPrinting(true);
     try {
       await printChart(weekStart, settings.householdName);
-      maybeRequestReview();
+      maybeRequestReview(['chart']);
     } catch (e: any) {
       Alert.alert('Couldn’t make the chart', e?.message ?? 'Please try again.');
     } finally {

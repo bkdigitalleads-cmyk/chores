@@ -21,6 +21,7 @@ import {
   isBillingAvailable,
 } from '../purchases';
 import { leadPackage, trialEligibility, trialLabel } from '../paywallPlans';
+import { requestReviewAfterPurchase } from '../reviews';
 
 // Copy lever 1: the word "free" sits next to a feature.
 const FEATURES: { icon: string; title: string; sub: string; free?: boolean }[] = [
@@ -72,6 +73,8 @@ export default function PaywallModal({ privacyUrl }: { privacyUrl: string }) {
       // Apple already shows its own confirmation; no second pop-up.
       setIsPro(true);
       hidePaywall();
+      // Rating moment: a trial or purchase just started (waits for Apple's confirmation to go away).
+      requestReviewAfterPurchase();
     } else if (!res.userCancelled && res.error) {
       Alert.alert('Purchase failed', res.error);
     }
