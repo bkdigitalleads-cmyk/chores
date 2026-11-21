@@ -1,7 +1,19 @@
 import { Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { completeTask, countCompletions, Member, Task, todayIso } from './db';
+import { completeTask, countCompletions, getCompletionsBetween, getTasks, Member, Task, todayIso } from './db';
 import { maybeRequestReview } from './reviews';
+
+/** Counts for the checkOff and allDone rating moments; today's list is counted like the Today tab (everyone). */
+async function checkOffFacts(today: string) {
+  const [tasks, doneToday, totalCompleted] = await Promise.all([
+    getTasks(),
+    getCompletionsBetween(today, today),
+    countCompletions(),
+  ]);
+  const remainingToday = tasks.filter((t) => t.nextDue <= today).length;
+  const doneTasks = new Set(doneToday.map((c) => c.taskId)).size;
+  return { totalCompleted, remainingToday, dueToday: remainingToday + doneTasks };
+}
 
 /**
  * Mark a chore done. If it's nobody's in particular and more than one person
@@ -14,11 +26,8 @@ export function checkOff(task: Task, members: Member[], onDone: () => void): voi
     await completeTask(task.id, by, today);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     onDone();
-    try {
-      if ((await countCompletions()) >= 1) maybeRequestReview();
-    } catch {
-      // never let the review prompt affect the app
-    }
+    // Rating moments: the first check-off (as in 1.0.2), then the first fully cleared day.
+    maybeRequestReview(['checkOff', 'allDone'], () => checkOffFacts(today));
   };
   if (task.memberId == null && members.length > 1) {
     Alert.alert('Who did it?', task.name, [
