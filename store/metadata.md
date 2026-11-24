@@ -17,8 +17,8 @@ Gate 1 numbers (ASOMobile, US iPhone, Sep 27 2026): chores 438 / Apple prev 39; 
 **Spanish (Mexico)** (from 1.0.3): until 1.0.2 an exact copy of the English listing, so it added nothing. Now its own English name and words for US search.
 - Name (27/30): `Chore Tracker: Cleaning App`
 - Subtitle (28/30): `Household Chores & Checklist`
-- Keywords (94/100): `tidy,laundry,declutter,housekeeping,reward,allowance,weekly,home,spotless,shared,routines,list`
-- Open question for Brian: `reward` and `allowance` name things the app does not have (no rewards or allowance; the chart has points). Left in for Brian to decide.
+- Keywords (91/100): `tidy,laundry,declutter,housekeeping,points,streak,weekly,home,spotless,shared,routines,list`
+- `points` and `streak` replace `reward` and `allowance` (Brian, Nov 24): the app has points per chore on the chart and a streak on Today, but no rewards or allowance.
 
 ## Extra listings indexed for US search
 
@@ -35,7 +35,7 @@ Apple also reads these eight languages for searches in the US store. Each holds 
 | Chinese (Simplified) | `Cleaning Planner: Tidy Home` | `Declutter, Laundry & Chores` | `house,schedule,checklist,tracker,organization,organizer,household,routine,adhd,maintenance,daily` |
 | Chinese (Traditional) | `Household Chores: Clean House` | `Cleaning App, Chore Checklist` | `schedule,tracker,planner,family,kids,roommate,home,organization,declutter,tidy,adhd,routine,list` |
 
-Open question for Brian: in Portuguese (Brazil), `deep` and `spring` aim at "deep clean" and "spring cleaning". The app has no deep-clean or spring-cleaning mode (only long-interval chores such as the oven every few months). Left in for Brian to decide.
+Portuguese (Brazil) keeps `deep` and `spring` (Brian, Nov 24): the long-interval chores (oven every few months, declutter every 3 months) cover deep clean and spring cleaning jobs.
 
 Lengths checked (name and subtitle at most 30 characters, keywords at most 100 bytes, no spaces, no word repeated inside a field or taken from that listing's name or subtitle). Name / subtitle / keywords: Arabic 29/29/93, French 29/30/93, Korean 26/29/97, Portuguese (Brazil) 29/29/95, Russian 29/29/92, Vietnamese 26/29/92, Chinese (Simplified) 27/27/96, Chinese (Traditional) 29/29/96.
 
