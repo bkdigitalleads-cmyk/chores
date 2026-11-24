@@ -13,6 +13,8 @@ import TaskEditor, { EditorTarget } from './src/screens/TaskEditor';
 import PaywallModal from './src/screens/Paywall';
 import Setup from './src/screens/Setup';
 import Onboarding from './src/screens/Onboarding';
+import { maybeRequestReview, noteInstallDay } from './src/reviews';
+import { countCompletions } from './src/db';
 
 type Tab = 'today' | 'rooms' | 'chart' | 'settings';
 
@@ -36,6 +38,9 @@ function Shell() {
   const [paywallShown, setPaywallShown] = useState(false);
   const [setupDone, setSetupDone] = useState(false);
   const paywallOpened = useRef(false);
+  const launchReviewChecked = useRef(false);
+  const paywallVisibleRef = useRef(paywallVisible);
+  paywallVisibleRef.current = paywallVisible;
 
   useEffect(() => {
     AsyncStorage.getItem(ONBOARDED_KEY)
@@ -53,6 +58,25 @@ function Shell() {
     }
     showPaywall();
   }, [ready, onboarded, isPro, showPaywall]);
+
+  // Once per cold launch: record the install day, then the laterDay rating moment.
+  // Waits a few seconds so the ask never lands on top of launch, and skips if the paywall is up.
+  useEffect(() => {
+    if (!ready || onboarded === null || launchReviewChecked.current) return;
+    launchReviewChecked.current = true;
+    const onboardedAtLaunch = onboarded;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    noteInstallDay().then(() => {
+      if (!onboardedAtLaunch) return;
+      timer = setTimeout(() => {
+        if (paywallVisibleRef.current) return;
+        maybeRequestReview(['laterDay'], async () => ({ totalCompleted: await countCompletions() }));
+      }, 4000);
+    });
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [ready, onboarded]);
 
   // When the first paywall closes (purchase or ✕), move on to room setup.
   useEffect(() => {
